@@ -50,6 +50,19 @@ if (typeof parsed !== 'object' || parsed === null || typeof (parsed as { url?: u
   process.exit(1);
 }
 
+const postUrl = (parsed as { url: string }).url;
+let host: string;
+try {
+  host = new URL(postUrl).hostname;
+} catch {
+  console.error(`POST.json "url" is not a valid URL: ${postUrl}`);
+  process.exit(1);
+}
+if (host !== 'x.com' && host !== 'twitter.com' && !host.endsWith('.x.com') && !host.endsWith('.twitter.com')) {
+  console.error(`POST.json "url" must point at an X post (x.com or twitter.com), got: ${postUrl}`);
+  process.exit(1);
+}
+
 mkdirSync(OUTPUT_DIR, { recursive: true });
 writeFileSync(target, JSON.stringify(parsed) + '\n', 'utf8');
-console.log(`Wrote ${target}: ${(parsed as { url: string }).url}`);
+console.log(`Wrote ${target}: ${postUrl}`);
